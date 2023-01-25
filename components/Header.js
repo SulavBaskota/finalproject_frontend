@@ -5,9 +5,12 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Navbar from "./Navbar";
-import { useEffect } from "react";
-import { useMoralis } from "react-moralis";
+import { useEffect, useState } from "react";
+import { useMoralis, useWeb3Contract } from "react-moralis";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
+import { adminAbi, adminAddress } from "../constants";
+import Image from "next/image";
+import logoPicWhite from "../public/logo-white.png";
 
 export default function Header() {
   const {
@@ -19,6 +22,20 @@ export default function Header() {
     deactivateWeb3,
   } = useMoralis();
 
+  const [admin, setAdmin] = useState(false);
+
+  const { runContractFunction: isAdmin } = useWeb3Contract({
+    abi: adminAbi,
+    contractAddress: adminAddress,
+    functionName: "isAdmin",
+    params: { adminAddress: account },
+  });
+
+  const updateUIValues = async () => {
+    const isAdminFromCall = await isAdmin();
+    setAdmin(isAdminFromCall);
+  };
+
   useEffect(() => {
     if (
       !isWeb3Enabled &&
@@ -26,8 +43,11 @@ export default function Header() {
       window.localStorage.getItem("provider")
     ) {
       enableWeb3();
+      setAdmin(false);
     }
-    console.log(isWeb3Enabled);
+    if (isWeb3Enabled) {
+      updateUIValues();
+    }
   }, [isWeb3Enabled]);
 
   useEffect(() => {
@@ -36,6 +56,7 @@ export default function Header() {
       if (newAccount == null) {
         window.localStorage.removeItem("provider");
         deactivateWeb3();
+        setAdmin(false);
         console.log("Null Account found");
       }
     });
@@ -54,6 +75,7 @@ export default function Header() {
     if (typeof window !== "undefined" && isWeb3Enabled) {
       window.localStorage.removeItem("provider");
       deactivateWeb3();
+      setAdmin(false);
     }
   };
 
@@ -61,10 +83,10 @@ export default function Header() {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar>
-          <Navbar />
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            D-Auction
-          </Typography>
+          <Navbar admin={admin} />
+          <Box sx={{ flexGrow: 1 }} pt={1}>
+            <Image src={logoPicWhite} height={80}/>
+          </Box>
           {account ? (
             <>
               <Button color="secondary" onClick={handleDisconnect}>

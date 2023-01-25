@@ -15,7 +15,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import WatchLaterIcon from "@mui/icons-material/WatchLater";
 import Image from "next/image";
-import logoPic from "../public/logo.png";
+import logoPicBlack from "../public/logo-black.png";
 
 const UserMenuList = [
   { text: "Home", icon: <HomeIcon /> },
@@ -24,7 +24,7 @@ const UserMenuList = [
 ];
 const AdminMenuList = ["Wating Verification", "Waiting Shipment"];
 
-export default function Navbar() {
+export default function Navbar({ admin }) {
   const [openDrawer, setOpenDrawer] = React.useState(false);
 
   const toggleDrawer = (open) => (event) => {
@@ -57,8 +57,8 @@ export default function Navbar() {
           onClick={toggleDrawer(false)}
           onKeyDown={toggleDrawer(false)}
         >
-          <Box display="flex" justifyContent="center">
-            <Image src={logoPic} alt="logo of the website" />
+          <Box display="flex" justifyContent="center" py={1}>
+            <Image src={logoPicBlack} alt="logo of the website" width={200} />
           </Box>
           <Divider />
           <List>
@@ -71,19 +71,23 @@ export default function Navbar() {
               </ListItem>
             ))}
           </List>
-          <Divider />
-          <List>
-            {AdminMenuList.map((text, index) => (
-              <ListItem key={text} disablePadding>
-                <ListItemButton>
-                  <ListItemIcon>
-                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                  </ListItemIcon>
-                  <ListItemText primary={text} />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
+          {admin && (
+            <>
+              <Divider />
+              <List>
+                {AdminMenuList.map((text, index) => (
+                  <ListItem key={text} disablePadding>
+                    <ListItemButton>
+                      <ListItemIcon>
+                        {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                      </ListItemIcon>
+                      <ListItemText primary={text} />
+                    </ListItemButton>
+                  </ListItem>
+                ))}
+              </List>
+            </>
+          )}
         </Box>
       </Drawer>
     </div>
