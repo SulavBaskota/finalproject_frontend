@@ -1,0 +1,52 @@
+[
+  { "type": "constructor", "payable": false, "inputs": [] },
+  { "type": "error", "name": "NotSuperAdmin", "inputs": [] },
+  {
+    "type": "function",
+    "name": "adminAddressMap",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "gas": 29000000,
+    "inputs": [{ "type": "address" }],
+    "outputs": [{ "type": "bool" }]
+  },
+  {
+    "type": "function",
+    "name": "isAdmin",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "gas": 29000000,
+    "inputs": [{ "type": "address", "name": "adminAddress" }],
+    "outputs": [{ "type": "bool" }]
+  },
+  {
+    "type": "function",
+    "name": "registerAdmin",
+    "constant": false,
+    "payable": false,
+    "gas": 29000000,
+    "inputs": [{ "type": "address", "name": "adminAddress" }],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "superAdminAddress",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "gas": 29000000,
+    "inputs": [],
+    "outputs": [{ "type": "address" }]
+  },
+  {
+    "type": "function",
+    "name": "unregisterAdmin",
+    "constant": false,
+    "payable": false,
+    "gas": 29000000,
+    "inputs": [{ "type": "address", "name": "adminAddress" }],
+    "outputs": []
+  }
+]
