@@ -1,4 +1,3 @@
-import * as React from "react";
 import PropTypes from "prop-types";
 import Head from "next/head";
 import { ThemeProvider } from "@mui/material/styles";
@@ -7,12 +6,28 @@ import { CacheProvider } from "@emotion/react";
 import theme from "../src/theme";
 import createEmotionCache from "../src/createEmotionCache";
 import { MoralisProvider } from "react-moralis";
+import Layout from "../components/Layout";
+import { useState, useCallback, useMemo } from "react";
+import { RoleContext } from "../src/Contexts";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 
 export default function MyApp(props) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
+  const [role, setRole] = useState("user");
+
+  const updateRole = useCallback((res) => {
+    setRole(res);
+  }, []);
+
+  const roleContextValue = useMemo(
+    () => ({
+      role,
+      updateRole,
+    }),
+    [role, updateRole]
+  );
 
   return (
     <CacheProvider value={emotionCache}>
@@ -23,7 +38,11 @@ export default function MyApp(props) {
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
         <CssBaseline />
         <MoralisProvider initializeOnMount={false}>
-          <Component {...pageProps} />
+          <RoleContext.Provider value={roleContextValue}>
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </RoleContext.Provider>
         </MoralisProvider>
       </ThemeProvider>
     </CacheProvider>

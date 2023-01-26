@@ -1,11 +1,11 @@
 const adminAbi = require("./Admin/abi.json");
-const adminAddress = require("./Admin/address.json");
+const adminContractAddress = require("./Admin/address.json");
 const blindAuctionFactoryAbi = require("./BlindAuctionFactory/abi.json");
-const blindAuctionFactoryAddress = require("./BlindAuctionFactory/address.json");
+const blindAuctionFactoryContractAddress = require("./BlindAuctionFactory/address.json");
 
 module.exports = {
   adminAbi,
-  adminAddress,
+  adminContractAddress,
   blindAuctionFactoryAbi,
-  blindAuctionFactoryAddress,
+  blindAuctionFactoryContractAddress,
 };

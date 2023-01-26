@@ -1,16 +1,15 @@
-import * as React from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Navbar from "./Navbar";
-import { useEffect, useState } from "react";
+import { useEffect, useContext } from "react";
 import { useMoralis, useWeb3Contract } from "react-moralis";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
-import { adminAbi, adminAddress } from "../constants";
+import { adminAbi, adminContractAddress } from "../constants";
 import Image from "next/image";
 import logoPicWhite from "../public/logo-white.png";
+import { RoleContext } from "../src/Contexts";
 
 export default function Header() {
   const {
@@ -22,70 +21,73 @@ export default function Header() {
     deactivateWeb3,
   } = useMoralis();
 
-  const [admin, setAdmin] = useState(false);
+  const { updateRole } = useContext(RoleContext);
 
   const { runContractFunction: isAdmin } = useWeb3Contract({
     abi: adminAbi,
-    contractAddress: adminAddress,
+    contractAddress: adminContractAddress,
     functionName: "isAdmin",
     params: { adminAddress: account },
   });
 
+  const { runContractFunction: isSuperAdmin } = useWeb3Contract({
+    abi: adminAbi,
+    contractAddress: adminContractAddress,
+    functionName: "isSuperAdmin",
+    params: {},
+  });
+
   const updateUIValues = async () => {
+    if (!isWeb3Enabled) {
+      updateRole("user");
+      return;
+    }
     const isAdminFromCall = await isAdmin();
-    setAdmin(isAdminFromCall);
+    if (isAdminFromCall) {
+      const isSuperAdminFromCall = await isSuperAdmin();
+      isSuperAdminFromCall ? updateRole("super") : updateRole("admin");
+    } else {
+      updateRole("user");
+    }
   };
-
-  useEffect(() => {
-    if (
-      !isWeb3Enabled &&
-      typeof window !== "undefined" &&
-      window.localStorage.getItem("provider")
-    ) {
-      enableWeb3();
-      setAdmin(false);
-    }
-    if (isWeb3Enabled) {
-      updateUIValues();
-    }
-  }, [isWeb3Enabled]);
-
-  useEffect(() => {
-    Moralis.onAccountChanged((newAccount) => {
-      console.log(`Account changed to ${newAccount}`);
-      if (newAccount == null) {
-        window.localStorage.removeItem("provider");
-        deactivateWeb3();
-        setAdmin(false);
-        console.log("Null Account found");
-      }
-    });
-  }, []);
 
   const handleConnect = async () => {
     const ret = await enableWeb3();
     if (typeof ret !== "undefined") {
-      if (typeof window !== "undefined") {
-        window.localStorage.setItem("provider", "metamask");
-      }
+      window.localStorage.setItem("provider", "metamask");
     }
   };
 
   const handleDisconnect = async () => {
-    if (typeof window !== "undefined" && isWeb3Enabled) {
+    if (isWeb3Enabled) {
       window.localStorage.removeItem("provider");
       deactivateWeb3();
-      setAdmin(false);
     }
   };
+
+  useEffect(() => {
+    if (!isWeb3Enabled && window.localStorage.getItem("provider")) {
+      enableWeb3();
+    }
+    updateUIValues();
+  }, [isWeb3Enabled, account]);
+
+  useEffect(() => {
+    Moralis.onAccountChanged((newAccount) => {
+      if (newAccount == null) {
+        window.localStorage.removeItem("provider");
+        deactivateWeb3();
+      }
+    });
+  }, []);
 
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar>
-          <Navbar admin={admin} />
+          <Navbar />
           <Box sx={{ flexGrow: 1 }} pt={1}>
-            <Image src={logoPicWhite} height={80}/>
+            <Image src={logoPicWhite} height={80} priority alt="Website Logo" />
           </Box>
           {account ? (
             <>
