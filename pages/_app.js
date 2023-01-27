@@ -15,7 +15,7 @@ const clientSideEmotionCache = createEmotionCache();
 
 export default function MyApp(props) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
-  const [role, setRole] = useState("user");
+  const [role, setRole] = useState(null);
 
   const updateRole = useCallback((res) => {
     setRole(res);
