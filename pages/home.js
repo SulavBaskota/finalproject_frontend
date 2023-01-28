@@ -1,7 +1,7 @@
 import ProTip from "../src/ProTip";
 import Link from "../src/Link";
 import Copyright from "../src/Copyright";
-import Typography from "@mui/material/Typography";
+import { Typography } from "@mui/material";
 
 export default function Home() {
   return (

@@ -1,7 +1,4 @@
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import Button from "@mui/material/Button";
+import { AppBar, Box, Toolbar, Button, Typography } from "@mui/material";
 import Navbar from "./Navbar";
 import { useEffect, useContext } from "react";
 import { useMoralis, useWeb3Contract } from "react-moralis";
@@ -10,7 +7,6 @@ import { adminAbi, adminContractAddress } from "../constants";
 import Image from "next/image";
 import logoPicWhite from "../public/logo-white.png";
 import { RoleContext } from "../src/Contexts";
-import { Typography } from "@mui/material";
 import Link from "../src/Link";
 
 export default function Header() {

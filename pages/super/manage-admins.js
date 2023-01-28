@@ -1,7 +1,13 @@
-import { Button, Divider, TextField, Typography, Box } from "@mui/material";
+import {
+  Button,
+  Divider,
+  TextField,
+  Typography,
+  Box,
+  Stack,
+} from "@mui/material";
 import { useEffect, useContext, useState } from "react";
 import { RoleContext } from "../../src/Contexts";
-import { Stack } from "@mui/system";
 import { useMoralis, useWeb3Contract } from "react-moralis";
 import { adminAbi, adminContractAddress } from "../../constants";
 import CustomBackdrop from "../../components/CustomBackdrop";
@@ -41,7 +47,6 @@ export default function ManageAdmins() {
   });
 
   const {
-    data: txResponse,
     runContractFunction: registerAdmin,
     isFetching,
     isLoading,
@@ -92,9 +97,9 @@ export default function ManageAdmins() {
               id="admin-address"
               label="Admin Address"
               variant="outlined"
-              value={newAdminAddress}
               onChange={(e) => setNewAdminAddress(e.target.value)}
               fullWidth
+              autoComplete="off"
             />
             <Box>
               <Button
