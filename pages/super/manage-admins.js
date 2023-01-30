@@ -12,11 +12,11 @@ import { useMoralis, useWeb3Contract } from "react-moralis";
 import { adminAbi, adminContractAddress } from "../../constants";
 import CustomBackdrop from "../../components/CustomBackdrop";
 import { useRouter } from "next/router";
+import { ethers } from "ethers";
 
 export default function ManageAdmins() {
   const { role } = useContext(RoleContext);
-  const { Moralis, isWeb3Enabled } = useMoralis();
-  const ethers = Moralis.web3Library;
+  const { isWeb3Enabled } = useMoralis();
   const router = useRouter();
   const [newAdminAddress, setNewAdminAddress] = useState("");
   const [adminAddressArray, setAdminAddressArray] = useState([]);
@@ -75,7 +75,7 @@ export default function ManageAdmins() {
 
   const handleRegistrationSuccess = async (tx) => {
     try {
-      await tx.wait(1);
+      await tx.wait();
       updateUIValues();
     } catch (error) {
       console.log(error);

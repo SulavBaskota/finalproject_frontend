@@ -5,6 +5,7 @@ import {
   Divider,
   TextField,
   Button,
+  Paper,
 } from "@mui/material";
 import {
   blindAuctionFactoryAbi,
@@ -16,11 +17,13 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { useWeb3Contract, useMoralis } from "react-moralis";
+import { ethers } from "ethers";
 
+const currentTime = new Date();
 export default function CreateAuction() {
-  const [biddingTime, setBiddingTime] = useState(null);
-  const [revealTime, setRevealTime] = useState(null);
-  const [value, setValue] = useState(dayjs("2022"));
+  const [startTime, setStartTime] = useState(dayjs(currentTime));
+  const [endTime, setEndTime] = useState(dayjs(currentTime));
+  const [minimumBid, setMinimumBid] = useState("0.1");
   const [auctionArray, setAuctionArray] = useState([]);
   const { isWeb3Enabled } = useMoralis();
 
@@ -28,7 +31,11 @@ export default function CreateAuction() {
     abi: blindAuctionFactoryAbi,
     contractAddress: blindAuctionFactoryContractAddress,
     functionName: "createBlindAuctionContract",
-    params: { biddingTime: biddingTime, revealTime: revealTime },
+    params: {
+      startTime: startTime.valueOf(),
+      endTime: endTime.valueOf(),
+      minimumBid: minimumBid ? ethers.utils.parseEther(minimumBid) : 0,
+    },
   });
 
   const { runContractFunction: getBlindAuctionAddresses } = useWeb3Contract({
@@ -56,8 +63,8 @@ export default function CreateAuction() {
 
   const handleCreateAuctionSuccess = async (tx) => {
     try {
-      await tx.wait(1);
-      console.log(JSON.stringify(tx));
+      const txResponse = await tx.wait();
+      console.log(JSON.stringify(txResponse.logs));
       updateUIValues();
     } catch (err) {
       console.log(err);
@@ -65,44 +72,45 @@ export default function CreateAuction() {
   };
 
   return (
-    <Stack spacing={2}>
+    <Stack spacing={2} component={Paper} elevation={2} p={2} border={2}>
       <Typography variant="h3">Create New Auction</Typography>
       <Divider />
-      <Stack spacing={2} alignItems="flex-end">
+      <Stack spacing={2}>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          spacing={2}
+        >
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DateTimePicker
+              renderInput={(props) => <TextField {...props} />}
+              label="Start Time"
+              value={startTime}
+              onChange={(newValue) => {
+                setStartTime(newValue);
+              }}
+            />
+          </LocalizationProvider>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DateTimePicker
+              renderInput={(props) => <TextField {...props} />}
+              label="End Time"
+              value={endTime}
+              onChange={(newValue) => {
+                setEndTime(newValue);
+              }}
+            />
+          </LocalizationProvider>
+        </Stack>
         <TextField
-          required
-          id="bidding-time"
-          label="Bidding Time in Seconds"
-          variant="outlined"
-          type="number"
-          onChange={(e) => setBiddingTime(e.target.value)}
-          fullWidth
+          label="Minimum Bid in ETH"
+          value={minimumBid}
           autoComplete="off"
-        />
-        <Typography>{biddingTime}</Typography>
-        <TextField
-          required
-          id="reveal-time"
-          label="Reveal Time in Seconds"
-          variant="outlined"
           type="number"
-          onChange={(e) => setRevealTime(e.target.value)}
-          fullWidth
-          autoComplete="off"
+          onChange={(e) => setMinimumBid(e.target.value)}
         />
-        <Typography>{revealTime}</Typography>
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DateTimePicker
-            renderInput={(props) => <TextField {...props} />}
-            label="Bidding Time"
-            value={value}
-            onChange={(newValue) => {
-              setValue(newValue);
-            }}
-          />
-        </LocalizationProvider>
-        <Typography>{JSON.stringify(value)}</Typography>
-        <Box>
+        <Box display="flex" justifyContent="flex-end">
           <Button
             variant="contained"
             color="secondary"
@@ -114,7 +122,7 @@ export default function CreateAuction() {
         {isWeb3Enabled &&
           auctionArray &&
           auctionArray.map((item, index) => (
-            <Typography keyy={index}>{item}</Typography>
+            <Typography key={index}>{item}</Typography>
           ))}
       </Stack>
     </Stack>
