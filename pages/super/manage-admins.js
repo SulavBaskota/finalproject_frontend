@@ -57,10 +57,12 @@ export default function ManageAdmins() {
     params: { adminAddress: newAdminAddress },
   });
 
+  const { runContractFunction: deleteAdmin } = useWeb3Contract();
+
   const updateUIValues = async () => {
     if (isWeb3Enabled) {
       const adminAddressArrayFromCall = await getAdmins();
-      setAdminAddressArray(adminAddressArrayFromCall);
+      setAdminAddressArray(adminAddressArrayFromCall.slice(1));
     }
   };
 
@@ -82,6 +84,89 @@ export default function ManageAdmins() {
     }
   };
 
+  const handleDeleteAdmin = async (address) => {
+    const options = {
+      abi: adminAbi,
+      contractAddress: adminContractAddress,
+      functionName: "unregisterAdmin",
+      params: { adminAddress: address },
+    };
+    await deleteAdmin({
+      params: options,
+      onSuccess: handleDeleteSuccess,
+      onError: (error) => console.log(error),
+    });
+  };
+
+  const handleDeleteSuccess = async (tx) => {
+    try {
+      await tx.wait();
+      updateUIValues();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const ResigterAdmin = () => (
+    <>
+      <Typography variant="h3">Register Admin</Typography>
+      <Divider />
+      <Stack spacing={2}>
+        <TextField
+          id="admin-address"
+          label="Admin Address"
+          variant="outlined"
+          onChange={(e) => setNewAdminAddress(e.target.value)}
+          fullWidth
+          autoComplete="off"
+        />
+        <Box display="flex" justifyContent="flex-end">
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={handleRegisterAdmin}
+          >
+            Add
+          </Button>
+        </Box>
+      </Stack>
+    </>
+  );
+
+  const DeleteAdmin = () => (
+    <>
+      <Typography variant="h3">Delete Admin</Typography>
+      <Divider />
+      <Stack spacing={2}>
+        {adminAddressArray.map((item, index) => (
+          <Stack key={index} spacing={2}>
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Typography
+                variant="body2"
+                fontWeight="bold"
+                textTransform="uppercase"
+              >
+                {item}
+              </Typography>
+              <Button
+                variant="outlined"
+                color="error"
+                onClick={() => handleDeleteAdmin(item)}
+              >
+                Delete
+              </Button>
+            </Stack>
+            <Divider />
+          </Stack>
+        ))}
+      </Stack>
+    </>
+  );
+
   return (
     <>
       {(isLoading || isFetching || showBackdrop) && (
@@ -89,33 +174,9 @@ export default function ManageAdmins() {
       )}
       {role && (
         <Stack spacing={2}>
-          <Typography variant="h3">Register New Admin</Typography>
+          <ResigterAdmin />
           <Divider />
-          <Stack spacing={2} alignItems="flex-end">
-            <TextField
-              required
-              id="admin-address"
-              label="Admin Address"
-              variant="outlined"
-              onChange={(e) => setNewAdminAddress(e.target.value)}
-              fullWidth
-              autoComplete="off"
-            />
-            <Box>
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={handleRegisterAdmin}
-              >
-                Add
-              </Button>
-            </Box>
-            {adminAddressArray.map((item, index) => (
-              <Typography variant="body2" key={index}>
-                {item}
-              </Typography>
-            ))}
-          </Stack>
+          <DeleteAdmin />
         </Stack>
       )}
     </>
