@@ -20,7 +20,13 @@ export default function ManageAdmins() {
   const router = useRouter();
   const [newAdminAddress, setNewAdminAddress] = useState("");
   const [adminAddressArray, setAdminAddressArray] = useState([]);
-  const [showBackdrop, setShowBackdrop] = useState(false);
+
+  const options = {
+    abi: adminAbi,
+    contractAddress: adminContractAddress,
+    functionName: "",
+    params: {},
+  };
 
   useEffect(() => {
     if (!role && !window.localStorage.getItem("provider")) {
@@ -32,43 +38,30 @@ export default function ManageAdmins() {
       return;
     }
     if (role && role === "super") {
-      setShowBackdrop(true);
       updateUIValues();
-      setShowBackdrop(false);
       return;
     }
   }, [role]);
 
-  const { runContractFunction: getAdmins } = useWeb3Contract({
-    abi: adminAbi,
-    contractAddress: adminContractAddress,
-    functionName: "getAdmins",
-    params: {},
-  });
-
-  const {
-    runContractFunction: registerAdmin,
-    isFetching,
-    isLoading,
-  } = useWeb3Contract({
-    abi: adminAbi,
-    contractAddress: adminContractAddress,
-    functionName: "registerAdmin",
-    params: { adminAddress: newAdminAddress },
-  });
-
-  const { runContractFunction: deleteAdmin } = useWeb3Contract();
+  const { runContractFunction, isFetching, isLoading } = useWeb3Contract();
 
   const updateUIValues = async () => {
     if (isWeb3Enabled) {
-      const adminAddressArrayFromCall = await getAdmins();
+      options.functionName = "getAdmins";
+      options.params = {};
+      const adminAddressArrayFromCall = await runContractFunction({
+        params: options,
+      });
       setAdminAddressArray(adminAddressArrayFromCall.slice(1));
     }
   };
 
   const handleRegisterAdmin = async () => {
     if (ethers.utils.isAddress(newAdminAddress)) {
-      await registerAdmin({
+      options.functionName = "registerAdmin";
+      options.params = { adminAddress: newAdminAddress };
+      await runContractFunction({
+        params: options,
         onSuccess: handleRegistrationSuccess,
         onError: (error) => console.log(error),
       });
@@ -78,6 +71,7 @@ export default function ManageAdmins() {
   const handleRegistrationSuccess = async (tx) => {
     try {
       await tx.wait();
+      setNewAdminAddress("");
       updateUIValues();
     } catch (error) {
       console.log(error);
@@ -85,13 +79,9 @@ export default function ManageAdmins() {
   };
 
   const handleDeleteAdmin = async (address) => {
-    const options = {
-      abi: adminAbi,
-      contractAddress: adminContractAddress,
-      functionName: "unregisterAdmin",
-      params: { adminAddress: address },
-    };
-    await deleteAdmin({
+    options.functionName = "unregisterAdmin";
+    options.params = { adminAddress: address };
+    await runContractFunction({
       params: options,
       onSuccess: handleDeleteSuccess,
       onError: (error) => console.log(error),
@@ -113,9 +103,11 @@ export default function ManageAdmins() {
       <Divider />
       <Stack spacing={2}>
         <TextField
+          required
           id="admin-address"
           label="Admin Address"
           variant="outlined"
+          value={newAdminAddress}
           onChange={(e) => setNewAdminAddress(e.target.value)}
           fullWidth
           autoComplete="off"
@@ -169,14 +161,14 @@ export default function ManageAdmins() {
 
   return (
     <>
-      {(isLoading || isFetching || showBackdrop) && (
-        <CustomBackdrop display={isLoading || isFetching || showBackdrop} />
+      {(isLoading || isFetching) && (
+        <CustomBackdrop display={isLoading || isFetching} />
       )}
       {role && (
         <Stack spacing={2}>
           <ResigterAdmin />
           <Divider />
-          <DeleteAdmin />
+          {adminAddressArray.length > 0 && <DeleteAdmin />}
         </Stack>
       )}
     </>
