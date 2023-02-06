@@ -19,7 +19,7 @@ export default function Header() {
     deactivateWeb3,
   } = useMoralis();
 
-  const { updateRole } = useContext(RoleContext);
+  const { role, updateRole } = useContext(RoleContext);
 
   const { runContractFunction: isAdmin } = useWeb3Contract({
     abi: adminAbi,
@@ -83,7 +83,7 @@ export default function Header() {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar>
-          <Navbar />
+          {role && <Navbar />}
           <Box sx={{ flexGrow: 1 }} pt={1}>
             <Button component={Link} noLinkStyle href="/" disableRipple>
               <Image

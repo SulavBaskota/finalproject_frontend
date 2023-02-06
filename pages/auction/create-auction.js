@@ -29,8 +29,8 @@ export default function CreateAuction() {
     contractAddress: blindAuctionFactoryContractAddress,
     functionName: "createBlindAuctionContract",
     params: {
-      startTime: startTime.valueOf(),
-      endTime: endTime.valueOf(),
+      startTime: Math.floor(startTime.valueOf() / 1000),
+      endTime: Math.floor(endTime.valueOf() / 1000),
       minimumBid: minimumBid ? ethers.utils.parseEther(minimumBid) : 0,
     },
   });

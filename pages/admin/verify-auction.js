@@ -1,20 +1,13 @@
-import {
-  Stack,
-  Typography,
-  Card,
-  CardActions,
-  CardContent,
-  Button,
-  TextField,
-  Box,
-} from "@mui/material";
+import { Stack, CardActions, Button, TextField, Box } from "@mui/material";
 import { useEffect, useState } from "react";
 import {
   blindAuctionFactoryAbi,
   blindAuctionFactoryContractAddress,
   blindAuctionAbi,
+  AUCTIONSTATE,
 } from "../../constants";
 import { useWeb3Contract, useMoralis } from "react-moralis";
+import AuctionDetailCard from "../../components/AuctionDetailCard";
 
 export default function VerifyAuction() {
   const [unVerifiedAuctions, setUnVerifiedAuctions] = useState([]);
@@ -57,7 +50,7 @@ export default function VerifyAuction() {
         const auctionDetailsFromCall = await runContractFunction({
           params: options,
         });
-        if (auctionDetailsFromCall._auctionState === 0) {
+        if (auctionDetailsFromCall._auctionState === AUCTIONSTATE.UNVERIFIED) {
           unVerifiedAuctionsFromCall.push(auctionDetailsFromCall);
         }
       });
@@ -86,7 +79,6 @@ export default function VerifyAuction() {
     const rejectMessage = new FormData(event.currentTarget).get(
       `rejectMessage-${contractAddress}`
     );
-
     options = {
       abi: blindAuctionAbi,
       contractAddress: contractAddress,
@@ -111,17 +103,17 @@ export default function VerifyAuction() {
     }
   };
 
-  const RejectAuctionForm = ({ item }) => (
+  const RejectAuctionForm = ({ contractAddress }) => (
     <Stack
       spacing={2}
       direction="row"
       component="form"
-      name={`rejectForm-${item._contractAddress}`}
+      name={`rejectForm-${contractAddress}`}
       autoComplete="off"
-      onSubmit={(event) => handleRejection(event, item._contractAddress)}
+      onSubmit={(event) => handleRejection(event, contractAddress)}
     >
       <TextField
-        name={`rejectMessage-${item._contractAddress}`}
+        name={`rejectMessage-${contractAddress}`}
         size="small"
         label="Reject Message"
         required
@@ -132,33 +124,34 @@ export default function VerifyAuction() {
     </Stack>
   );
 
+  const CardChildComponent = ({ contractAddress }) => (
+    <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+      <Stack spacing={2} alignItems="flex-end">
+        <Box>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => handleVerification(contractAddress)}
+          >
+            Verify
+          </Button>
+        </Box>
+        <RejectAuctionForm contractAddress={contractAddress} />
+      </Stack>
+    </Box>
+  );
+
   return (
     <Stack spacing={2}>
       {unVerifiedAuctions &&
         unVerifiedAuctions.map((item, index) => (
-          <Card key={index} elevation={4}>
-            <CardContent>
-              <Typography>Address: {item._contractAddress}</Typography>
-              <Typography>Seller: {item._seller}</Typography>
-              <Typography>Start Time: {parseInt(item._startTime)}</Typography>
-              <Typography>End Time: {parseInt(item._endTime)}</Typography>
-              <Typography>Mimimum Bid: {parseInt(item._minimumBid)}</Typography>
-            </CardContent>
-            <CardActions sx={{ display: "flex", justifyContent: "flex-end" }}>
-              <Stack spacing={2} alignItems="flex-end">
-                <Box>
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    onClick={() => handleVerification(item._contractAddress)}
-                  >
-                    Verify
-                  </Button>
-                </Box>
-                <RejectAuctionForm item={item} />
-              </Stack>
-            </CardActions>
-          </Card>
+          <AuctionDetailCard
+            item={item}
+            index={index}
+            children={
+              <CardChildComponent contractAddress={item._contractAddress} />
+            }
+          />
         ))}
     </Stack>
   );
