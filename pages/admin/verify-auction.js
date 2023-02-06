@@ -1,4 +1,4 @@
-import { Stack, CardActions, Button, TextField, Box } from "@mui/material";
+import { Stack, Button, TextField, Box } from "@mui/material";
 import { useEffect, useState } from "react";
 import {
   blindAuctionFactoryAbi,

@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 
 export default function AuctionDetailCard({ item, index, children }) {
   return (
-    <Paper key={index} elevation={4}>
+    <Paper elevation={4} key={index}>
       <Box p={2}>
         <Stack spacing={2}>
           <Typography>Address: {item._contractAddress}</Typography>

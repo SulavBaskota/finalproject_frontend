@@ -10,12 +10,12 @@ import {
   blindAuctionFactoryAbi,
   blindAuctionFactoryContractAddress,
 } from "../../constants";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import { useWeb3Contract, useMoralis } from "react-moralis";
+import { useWeb3Contract } from "react-moralis";
 import { ethers } from "ethers";
 
 const currentTime = new Date();
@@ -24,19 +24,23 @@ export default function CreateAuction() {
   const [endTime, setEndTime] = useState(dayjs(currentTime));
   const [minimumBid, setMinimumBid] = useState("0.1");
 
-  const { runContractFunction: createBlindAuctionContract } = useWeb3Contract({
+  const options = {
     abi: blindAuctionFactoryAbi,
     contractAddress: blindAuctionFactoryContractAddress,
     functionName: "createBlindAuctionContract",
-    params: {
-      startTime: Math.floor(startTime.valueOf() / 1000),
-      endTime: Math.floor(endTime.valueOf() / 1000),
-      minimumBid: minimumBid ? ethers.utils.parseEther(minimumBid) : 0,
-    },
-  });
+    params: {},
+  };
+
+  const { runContractFunction } = useWeb3Contract();
 
   const handleCreateAuction = async () => {
-    await createBlindAuctionContract({
+    options.params = {
+      startTime: Math.floor(startTime.valueOf() / 1000),
+      endTime: Math.floor(endTime.valueOf() / 1000),
+      minimumBid: ethers.utils.parseEther(minimumBid),
+    };
+    await runContractFunction({
+      params: options,
       onSuccess: handleCreateAuctionSuccess,
       onError: (error) => console.log(error),
     });

@@ -1,4 +1,4 @@
-import { Box, Button, CardActions, Stack, Typography } from "@mui/material";
+import { Box, Button, Stack } from "@mui/material";
 import { useEffect, useState } from "react";
 import {
   blindAuctionFactoryAbi,
@@ -65,10 +65,7 @@ export default function Home() {
         variant="contained"
         color="secondary"
         component={Link}
-        href={{
-          pathname: "/auction/[aid]",
-          query: { aid: encodeURIComponent(contractAddress) },
-        }}
+        href={`/auction/${encodeURIComponent(contractAddress)}`}
       >
         Learn More
       </Button>
