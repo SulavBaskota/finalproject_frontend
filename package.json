@@ -27,7 +27,8 @@
     "prop-types": "latest",
     "react": "latest",
     "react-dom": "latest",
-    "react-moralis": "^1.4.2"
+    "react-moralis": "^1.4.2",
+    "web3.storage": "^4.4.0"
   },
   "devDependencies": {
     "eslint": "latest",

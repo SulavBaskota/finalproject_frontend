@@ -43,12 +43,14 @@ export default function Header() {
   }, [isWeb3Enabled, account]);
 
   useEffect(() => {
-    Moralis.onAccountChanged((newAccount) => {
+    const unsubscribe = Moralis.onAccountChanged((newAccount) => {
       if (newAccount == null) {
         window.localStorage.removeItem("provider");
         deactivateWeb3();
       }
     });
+
+    unsubscribe();
   }, []);
 
   const updateUIValues = async () => {

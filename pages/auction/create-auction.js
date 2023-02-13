@@ -17,12 +17,19 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { useWeb3Contract } from "react-moralis";
 import { ethers } from "ethers";
+import { Web3Storage } from "web3.storage";
+import ImageUpload from "../../components/ImageUpload";
 
 const currentTime = new Date();
 export default function CreateAuction() {
   const [startTime, setStartTime] = useState(dayjs(currentTime));
   const [endTime, setEndTime] = useState(dayjs(currentTime));
   const [minimumBid, setMinimumBid] = useState("0.1");
+  const [images, setImages] = useState([]);
+
+  const web3storageClient = new Web3Storage({
+    token: process.env.NEXT_PUBLIC_WEB3STORAGE_TOKEN,
+  });
 
   const options = {
     abi: blindAuctionFactoryAbi,
@@ -34,6 +41,8 @@ export default function CreateAuction() {
   const { runContractFunction } = useWeb3Contract();
 
   const handleCreateAuction = async () => {
+    const cid = await web3storageClient.put(images);
+    console.log("stored files with cid: ", cid);
     options.params = {
       startTime: Math.floor(startTime.valueOf() / 1000),
       endTime: Math.floor(endTime.valueOf() / 1000),
@@ -63,7 +72,7 @@ export default function CreateAuction() {
       <Stack spacing={2}>
         <Stack
           direction="row"
-          justifyContent="space-between"
+          justifyContent="flex-start"
           alignItems="center"
           spacing={2}
         >
@@ -95,11 +104,13 @@ export default function CreateAuction() {
           type="number"
           onChange={(e) => setMinimumBid(e.target.value)}
         />
+        <ImageUpload images={images} setImages={setImages} />
         <Box display="flex" justifyContent="flex-end">
           <Button
             variant="contained"
             color="secondary"
             onClick={handleCreateAuction}
+            size="large"
           >
             Submit
           </Button>

@@ -49,10 +49,9 @@ export default function Auction() {
   return (
     <Box>
       {auctionDetail &&
-        auctionDetail.map((item, index) => (
+        auctionDetail.map((item) => (
           <AuctionDetailCard
             item={item}
-            index={index}
             children={<CardChildComponent aid={aid} />}
           />
         ))}

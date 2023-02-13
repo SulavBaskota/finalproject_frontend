@@ -145,13 +145,14 @@ export default function VerifyAuction() {
     <Stack spacing={2}>
       {unVerifiedAuctions &&
         unVerifiedAuctions.map((item, index) => (
-          <AuctionDetailCard
-            item={item}
-            index={index}
-            children={
-              <CardChildComponent contractAddress={item._contractAddress} />
-            }
-          />
+          <Box key={index}>
+            <AuctionDetailCard
+              item={item}
+              children={
+                <CardChildComponent contractAddress={item._contractAddress} />
+              }
+            />
+          </Box>
         ))}
     </Stack>
   );

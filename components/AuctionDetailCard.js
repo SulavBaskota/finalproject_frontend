@@ -2,9 +2,9 @@ import { Typography, Stack, Paper, Box } from "@mui/material";
 import { ethers } from "ethers";
 import dayjs from "dayjs";
 
-export default function AuctionDetailCard({ item, index, children }) {
+export default function AuctionDetailCard({ item, children }) {
   return (
-    <Paper elevation={4} key={index}>
+    <Paper elevation={4}>
       <Box p={2}>
         <Stack spacing={2}>
           <Typography>Address: {item._contractAddress}</Typography>
