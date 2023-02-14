@@ -97,13 +97,15 @@ export default function CreateAuction() {
             />
           </LocalizationProvider>
         </Stack>
-        <TextField
-          label="Minimum Bid in ETH"
-          value={minimumBid}
-          autoComplete="off"
-          type="number"
-          onChange={(e) => setMinimumBid(e.target.value)}
-        />
+        <Box>
+          <TextField
+            label="Minimum Bid in ETH"
+            value={minimumBid}
+            autoComplete="off"
+            type="number"
+            onChange={(e) => setMinimumBid(e.target.value)}
+          />
+        </Box>
         <ImageUpload images={images} setImages={setImages} />
         <Box display="flex" justifyContent="flex-end">
           <Button

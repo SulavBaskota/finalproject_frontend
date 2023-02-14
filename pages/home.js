@@ -1,4 +1,4 @@
-import { Box, Button, Stack } from "@mui/material";
+import { Box, Button, Grid } from "@mui/material";
 import { useEffect, useState } from "react";
 import {
   blindAuctionFactoryAbi,
@@ -7,7 +7,7 @@ import {
   AUCTIONSTATE,
 } from "../constants";
 import { useWeb3Contract, useMoralis } from "react-moralis";
-import AuctionDetailCard from "../components/AuctionDetailCard";
+import AuctionMediaCard from "../components/AuctionMediaCard";
 import Link from "../src/Link";
 
 export default function Home() {
@@ -73,18 +73,18 @@ export default function Home() {
   );
 
   return (
-    <Stack spacing={2}>
+    <Grid container spacing={2}>
       {openAuctions &&
         openAuctions.map((item, index) => (
-          <Box key={index}>
-            <AuctionDetailCard
-              item={item}
-              children={
-                <CardChildComponent contractAddress={item._contractAddress} />
-              }
-            />
-          </Box>
+          <Grid item key={index} xs={12} md={6} xl={4}>
+              <AuctionMediaCard
+                item={item}
+                children={
+                  <CardChildComponent contractAddress={item._contractAddress} />
+                }
+              />
+          </Grid>
         ))}
-    </Stack>
+    </Grid>
   );
 }

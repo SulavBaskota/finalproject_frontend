@@ -5,7 +5,7 @@ export default function Layout({ children }) {
   return (
     <>
       <Header />
-      <Container maxWidth="sm">
+      <Container maxWidth="xl">
         <Box sx={{ my: 4 }}>
           <main>{children}</main>
         </Box>

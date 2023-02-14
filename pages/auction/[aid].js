@@ -14,7 +14,7 @@ export default function Auction() {
   const { aid } = router.query;
   const { runContractFunction } = useWeb3Contract();
   const { isWeb3Enabled } = useMoralis();
-  const [auctionDetail, setAuctionDetail] = useState([]);
+  const [auctionDetail, setAuctionDetail] = useState(null);
 
   const options = {
     abi: blindAuctionAbi,
@@ -33,7 +33,7 @@ export default function Auction() {
       params: options,
     });
     if (auctionDetailFromCall) {
-      setAuctionDetail([auctionDetailFromCall]);
+      setAuctionDetail(auctionDetailFromCall);
     }
   };
 
@@ -48,15 +48,12 @@ export default function Auction() {
 
   return (
     <Box>
-      {auctionDetail &&
-        auctionDetail.map((item, index) => (
-          <Box key={index}>
-            <AuctionDetailCard
-              item={item}
-              children={<CardChildComponent aid={aid} />}
-            />
-          </Box>
-        ))}
+      {auctionDetail && (
+        <AuctionDetailCard
+          item={auctionDetail}
+          children={<CardChildComponent aid={aid} />}
+        />
+      )}
     </Box>
   );
 }
