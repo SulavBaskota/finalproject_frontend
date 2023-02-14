@@ -42,11 +42,11 @@ export default function CreateAuction() {
 
   const handleCreateAuction = async () => {
     const cid = await web3storageClient.put(images);
-    console.log("stored files with cid: ", cid);
     options.params = {
       startTime: Math.floor(startTime.valueOf() / 1000),
       endTime: Math.floor(endTime.valueOf() / 1000),
       minimumBid: ethers.utils.parseEther(minimumBid),
+      cid: cid,
     };
     await runContractFunction({
       params: options,

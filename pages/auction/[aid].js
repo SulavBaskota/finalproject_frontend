@@ -49,11 +49,13 @@ export default function Auction() {
   return (
     <Box>
       {auctionDetail &&
-        auctionDetail.map((item) => (
-          <AuctionDetailCard
-            item={item}
-            children={<CardChildComponent aid={aid} />}
-          />
+        auctionDetail.map((item, index) => (
+          <Box key={index}>
+            <AuctionDetailCard
+              item={item}
+              children={<CardChildComponent aid={aid} />}
+            />
+          </Box>
         ))}
     </Box>
   );

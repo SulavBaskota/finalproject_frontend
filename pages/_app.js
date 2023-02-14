@@ -9,8 +9,14 @@ import { MoralisProvider } from "react-moralis";
 import Layout from "../components/Layout";
 import { useState, useCallback, useMemo } from "react";
 import { RoleContext } from "../src/Contexts";
+import { register } from "swiper/element/bundle";
+import "../styles/globals.css";
 
 // Client-side cache, shared for the whole session of the user in the browser.
+
+// register Swiper custom elements
+register();
+
 const clientSideEmotionCache = createEmotionCache();
 
 export default function MyApp(props) {

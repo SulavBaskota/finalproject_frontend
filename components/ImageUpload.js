@@ -9,6 +9,7 @@ import {
 import UploadIcon from "@mui/icons-material/Upload";
 import { styled } from "@mui/material/styles";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 const Input = styled("input")({
   display: "none",
@@ -36,14 +37,10 @@ export default function ImageUpload({ images, setImages }) {
     <>
       {images.length > 0 && imageUrls.length > 0 && (
         <Box>
-          <ImageList cols={3} rowHeight={164}>
+          <ImageList cols={3} rowHeight={200}>
             {imageUrls.map((item, index) => (
               <ImageListItem key={index}>
-                <img
-                  src={item}
-                  loading="lazy"
-                  srcSet={`${item}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-                />
+                <Image src={item} alt="" fill quality={25} />
               </ImageListItem>
             ))}
           </ImageList>
