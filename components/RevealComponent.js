@@ -57,7 +57,7 @@ export default function RevealComponent({ aid }) {
         value={secret}
         onChange={(e) => setSecret(e.target.value)}
       />
-      <Box>
+      <Box display="flex" justifyContent="flex-end">
         <Button variant="contained" color="secondary" onClick={handleClick}>
           Reveal
         </Button>

@@ -30,8 +30,8 @@ export default function EndAuctionComponent({ aid }) {
   };
 
   return (
-    <Box>
-      <Button variant="contained" onClick={handleClick}>
+    <Box display="flex" justifyContent="flex-end">
+      <Button variant="contained" onClick={handleClick} color="error">
         End Auction
       </Button>
     </Box>

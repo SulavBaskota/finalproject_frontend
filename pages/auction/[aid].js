@@ -1,6 +1,5 @@
 import { useRouter } from "next/router";
 import { useWeb3Contract, useMoralis } from "react-moralis";
-import { Box } from "@mui/material";
 import AuctionDetailCard from "../../components/AuctionDetailCard";
 import { useState, useEffect } from "react";
 import { blindAuctionAbi } from "../../constants";
@@ -47,13 +46,13 @@ export default function Auction() {
   );
 
   return (
-    <Box>
+    <>
       {auctionDetail && (
         <AuctionDetailCard
           item={auctionDetail}
           children={<CardChildComponent aid={aid} />}
         />
       )}
-    </Box>
+    </>
   );
 }

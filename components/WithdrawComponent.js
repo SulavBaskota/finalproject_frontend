@@ -30,7 +30,7 @@ export default function WithdrawComponent({ aid }) {
   };
 
   return (
-    <Box>
+    <Box display="flex" justifyContent="flex-end">
       <Button variant="contained" onClick={handleClick}>
         Withdraw
       </Button>

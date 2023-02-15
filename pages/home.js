@@ -73,16 +73,16 @@ export default function Home() {
   );
 
   return (
-    <Grid container spacing={2}>
+    <Grid container spacing={2} columns={{ xs: 2, md: 6, xl: 12 }}>
       {openAuctions &&
         openAuctions.map((item, index) => (
-          <Grid item key={index} xs={12} md={6} xl={4}>
-              <AuctionMediaCard
-                item={item}
-                children={
-                  <CardChildComponent contractAddress={item._contractAddress} />
-                }
-              />
+          <Grid item key={index} xs={2} md={3} xl={4}>
+            <AuctionMediaCard
+              item={item}
+              children={
+                <CardChildComponent contractAddress={item._contractAddress} />
+              }
+            />
           </Grid>
         ))}
     </Grid>

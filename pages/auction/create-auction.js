@@ -5,6 +5,7 @@ import {
   Divider,
   TextField,
   Button,
+  Paper,
 } from "@mui/material";
 import {
   blindAuctionFactoryAbi,
@@ -66,58 +67,62 @@ export default function CreateAuction() {
   };
 
   return (
-    <Stack spacing={2}>
-      <Typography variant="h3">Create New Auction</Typography>
-      <Divider />
-      <Stack spacing={2}>
-        <Stack
-          direction="row"
-          justifyContent="flex-start"
-          alignItems="center"
-          spacing={2}
-        >
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DateTimePicker
-              renderInput={(props) => <TextField {...props} />}
-              label="Start Time"
-              value={startTime}
-              onChange={(newValue) => {
-                setStartTime(newValue);
-              }}
-            />
-          </LocalizationProvider>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DateTimePicker
-              renderInput={(props) => <TextField {...props} />}
-              label="End Time"
-              value={endTime}
-              onChange={(newValue) => {
-                setEndTime(newValue);
-              }}
-            />
-          </LocalizationProvider>
+    <Box display="flex" justifyContent="center">
+      <Box p={2} component={Paper} elevation={4} boxShadow={6}>
+        <Stack spacing={2}>
+          <Typography variant="h3">Create New Auction</Typography>
+          <Divider />
+          <Stack spacing={2}>
+            <Stack
+              direction="row"
+              justifyContent="flex-start"
+              alignItems="center"
+              spacing={2}
+            >
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DateTimePicker
+                  renderInput={(props) => <TextField {...props} />}
+                  label="Start Time"
+                  value={startTime}
+                  onChange={(newValue) => {
+                    setStartTime(newValue);
+                  }}
+                />
+              </LocalizationProvider>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DateTimePicker
+                  renderInput={(props) => <TextField {...props} />}
+                  label="End Time"
+                  value={endTime}
+                  onChange={(newValue) => {
+                    setEndTime(newValue);
+                  }}
+                />
+              </LocalizationProvider>
+            </Stack>
+            <Box>
+              <TextField
+                label="Minimum Bid in ETH"
+                value={minimumBid}
+                autoComplete="off"
+                type="number"
+                onChange={(e) => setMinimumBid(e.target.value)}
+              />
+            </Box>
+            <ImageUpload images={images} setImages={setImages} />
+            <Box display="flex" justifyContent="flex-end">
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={handleCreateAuction}
+                size="large"
+              >
+                Submit
+              </Button>
+            </Box>
+          </Stack>
         </Stack>
-        <Box>
-          <TextField
-            label="Minimum Bid in ETH"
-            value={minimumBid}
-            autoComplete="off"
-            type="number"
-            onChange={(e) => setMinimumBid(e.target.value)}
-          />
-        </Box>
-        <ImageUpload images={images} setImages={setImages} />
-        <Box display="flex" justifyContent="flex-end">
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={handleCreateAuction}
-            size="large"
-          >
-            Submit
-          </Button>
-        </Box>
-      </Stack>
-    </Stack>
+      </Box>
+    </Box>
   );
 }

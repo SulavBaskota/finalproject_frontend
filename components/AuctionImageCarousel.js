@@ -39,13 +39,13 @@ export default function AuctionImagesCarousel({ cid, compact }) {
         >
           {imageUrls.map((imageUrl, index) => (
             <swiper-slide key={index}>
-              <Box display="flex" justifyContent="center">
-                <Image
-                  src={imageUrl}
-                  alt={images[index].name}
-                  width={compact ? 368 : 568}
-                  height={compact ? 368 : 400}
-                />
+              <Box
+                display="flex"
+                justifyContent="center"
+                position="relative"
+                height={400}
+              >
+                <Image src={imageUrl} alt={images[index].name} fill />
               </Box>
             </swiper-slide>
           ))}
