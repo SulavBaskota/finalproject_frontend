@@ -20,6 +20,7 @@
     "@next/font": "latest",
     "@walletconnect/web3-provider": "^1.8.0",
     "@web3auth/web3auth": "^2.1.3",
+    "browser-image-compression": "^2.0.0",
     "dayjs": "^1.11.7",
     "magic-sdk": "^13.1.0",
     "moralis-v1": "^1.12.0",

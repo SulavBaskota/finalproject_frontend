@@ -5,39 +5,61 @@ import {
   ImageList,
   Box,
   ImageListItem,
+  styled,
+  useMediaQuery,
 } from "@mui/material";
 import UploadIcon from "@mui/icons-material/Upload";
-import { styled } from "@mui/material/styles";
-import { useEffect, useState } from "react";
+import { useRef, useMemo, useCallback } from "react";
 import Image from "next/image";
+import imageCompression from "browser-image-compression";
 
 const Input = styled("input")({
   display: "none",
 });
 
-export default function ImageUpload({ images, setImages }) {
-  const [imageUrls, setImageUrls] = useState([]);
+export default function ImageUpload({
+  images,
+  setImages,
+  setCompressedImages,
+}) {
+  const ref = useRef();
+  const smallScreen = useMediaQuery((theme) => theme.breakpoints.down("sm"));
 
-  useEffect(() => {
-    if (images.length < 1) return;
-    const newImageUrls = [];
-    images.forEach((image) => newImageUrls.push(URL.createObjectURL(image)));
-    setImageUrls(newImageUrls);
-  }, [images]);
+  const imageUrls = useMemo(
+    () => images.map((image) => URL.createObjectURL(image)),
+    [images]
+  );
 
-  const handleChange = (event) => {
-    setImages([...event.target.files]);
-  };
+  const handleChange = useCallback(
+    async (event) => {
+      const originalImages = [...event.target.files];
+      const options = {
+        maxSizeMB: 0.1,
+        maxWidthOrHeight: 600,
+        useWebWorker: true,
+      };
+      setCompressedImages([]);
+      const newCompressedImages = await Promise.all(
+        originalImages.map((image) => imageCompression(image, options))
+      );
+
+      setImages(originalImages);
+      setCompressedImages(newCompressedImages);
+    },
+    [setCompressedImages, setImages]
+  );
 
   const handleClear = () => {
     setImages([]);
+    setCompressedImages([]);
+    ref.current.value = "";
   };
 
   return (
     <>
-      {images.length > 0 && imageUrls.length > 0 && (
+      {images.length > 0 && (
         <Box>
-          <ImageList cols={3} rowHeight={200}>
+          <ImageList cols={smallScreen ? 2 : 3} rowHeight={200}>
             {imageUrls.map((item, index) => (
               <ImageListItem key={index}>
                 <Image src={item} alt="" fill quality={25} />
@@ -62,6 +84,7 @@ export default function ImageUpload({ images, setImages }) {
         <Input
           accept="image/*"
           id="select-images"
+          ref={ref}
           type="file"
           multiple
           onChange={handleChange}

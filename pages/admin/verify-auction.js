@@ -96,7 +96,7 @@ export default function VerifyAuction() {
   const handleSuccess = async (tx) => {
     try {
       const txResponse = await tx.wait();
-      console.log(JSON.stringify(txResponse.logs));
+      console.log(txResponse);
       updateUIValues();
     } catch (error) {
       console.log(error);

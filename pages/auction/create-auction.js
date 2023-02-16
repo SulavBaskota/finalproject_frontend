@@ -20,13 +20,19 @@ import { useWeb3Contract } from "react-moralis";
 import { ethers } from "ethers";
 import { Web3Storage } from "web3.storage";
 import ImageUpload from "../../components/ImageUpload";
+import CustomBackdrop from "../../components/CustomBackdrop";
 
 const currentTime = new Date();
+
 export default function CreateAuction() {
   const [startTime, setStartTime] = useState(dayjs(currentTime));
   const [endTime, setEndTime] = useState(dayjs(currentTime));
   const [minimumBid, setMinimumBid] = useState("0.1");
   const [images, setImages] = useState([]);
+  const [compressedImages, setCompressedImages] = useState([]);
+  const [showBackdrop, setShowBackdrop] = useState(false);
+
+  const isSubmitButtonDisabled = compressedImages.length === 0;
 
   const web3storageClient = new Web3Storage({
     token: process.env.NEXT_PUBLIC_WEB3STORAGE_TOKEN,
@@ -42,24 +48,28 @@ export default function CreateAuction() {
   const { runContractFunction } = useWeb3Contract();
 
   const handleCreateAuction = async () => {
-    const cid = await web3storageClient.put(images);
+    setShowBackdrop(true);
+    const cid = await web3storageClient.put(compressedImages);
     options.params = {
       startTime: Math.floor(startTime.valueOf() / 1000),
       endTime: Math.floor(endTime.valueOf() / 1000),
       minimumBid: ethers.utils.parseEther(minimumBid),
       cid: cid,
     };
+
     await runContractFunction({
       params: options,
       onSuccess: handleCreateAuctionSuccess,
       onError: (error) => console.log(error),
     });
+
+    setShowBackdrop(false);
   };
 
   const handleCreateAuctionSuccess = async (tx) => {
     try {
       const txResponse = await tx.wait();
-      console.log(JSON.stringify(txResponse.logs));
+      console.log(txResponse);
       updateUIValues();
     } catch (err) {
       console.log(err);
@@ -67,62 +77,76 @@ export default function CreateAuction() {
   };
 
   return (
-    <Box display="flex" justifyContent="center">
-      <Box p={2} component={Paper} elevation={4} boxShadow={6}>
-        <Stack spacing={2}>
-          <Typography variant="h3">Create New Auction</Typography>
-          <Divider />
+    <>
+      {showBackdrop && <CustomBackdrop display={showBackdrop} />}
+      <Box display="flex" justifyContent="center">
+        <Box
+          p={2}
+          component={Paper}
+          elevation={4}
+          boxShadow={6}
+          width={{ xs: 400, sm: 600, md: 900 }}
+        >
           <Stack spacing={2}>
-            <Stack
-              direction="row"
-              justifyContent="flex-start"
-              alignItems="center"
-              spacing={2}
-            >
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DateTimePicker
-                  renderInput={(props) => <TextField {...props} />}
-                  label="Start Time"
-                  value={startTime}
-                  onChange={(newValue) => {
-                    setStartTime(newValue);
-                  }}
-                />
-              </LocalizationProvider>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DateTimePicker
-                  renderInput={(props) => <TextField {...props} />}
-                  label="End Time"
-                  value={endTime}
-                  onChange={(newValue) => {
-                    setEndTime(newValue);
-                  }}
-                />
-              </LocalizationProvider>
-            </Stack>
-            <Box>
-              <TextField
-                label="Minimum Bid in ETH"
-                value={minimumBid}
-                autoComplete="off"
-                type="number"
-                onChange={(e) => setMinimumBid(e.target.value)}
-              />
-            </Box>
-            <ImageUpload images={images} setImages={setImages} />
-            <Box display="flex" justifyContent="flex-end">
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={handleCreateAuction}
-                size="large"
+            <Typography variant="h3">Create New Auction</Typography>
+            <Divider />
+            <Stack spacing={2}>
+              <Stack
+                direction="row"
+                justifyContent="flex-start"
+                alignItems="center"
+                spacing={2}
               >
-                Submit
-              </Button>
-            </Box>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DateTimePicker
+                    renderInput={(props) => <TextField {...props} />}
+                    label="Start Time"
+                    value={startTime}
+                    onChange={(newValue) => {
+                      setStartTime(newValue);
+                    }}
+                  />
+                </LocalizationProvider>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DateTimePicker
+                    renderInput={(props) => <TextField {...props} />}
+                    label="End Time"
+                    value={endTime}
+                    onChange={(newValue) => {
+                      setEndTime(newValue);
+                    }}
+                  />
+                </LocalizationProvider>
+              </Stack>
+              <Box>
+                <TextField
+                  label="Minimum Bid in ETH"
+                  value={minimumBid}
+                  autoComplete="off"
+                  type="number"
+                  onChange={(e) => setMinimumBid(e.target.value)}
+                />
+              </Box>
+              <ImageUpload
+                images={images}
+                setImages={setImages}
+                setCompressedImages={setCompressedImages}
+              />
+              <Box display="flex" justifyContent="flex-end">
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={handleCreateAuction}
+                  size="large"
+                  disabled={isSubmitButtonDisabled}
+                >
+                  Submit
+                </Button>
+              </Box>
+            </Stack>
           </Stack>
-        </Stack>
+        </Box>
       </Box>
-    </Box>
+    </>
   );
 }
