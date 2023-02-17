@@ -36,7 +36,7 @@ export default function Auction() {
     }
   };
 
-  const CardChildComponent = ({ aid }) => (
+  const CardChildComponent = () => (
     <>
       <BidComponent aid={aid} />
       <RevealComponent aid={aid} />
@@ -50,7 +50,7 @@ export default function Auction() {
       {auctionDetail && (
         <AuctionDetailCard
           item={auctionDetail}
-          children={<CardChildComponent aid={aid} />}
+          childComponent={<CardChildComponent />}
         />
       )}
     </>

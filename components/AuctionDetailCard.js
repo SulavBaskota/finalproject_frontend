@@ -2,10 +2,11 @@ import { Typography, Stack, Paper, Box, Grid } from "@mui/material";
 import { ethers } from "ethers";
 import dayjs from "dayjs";
 import AuctionImagesCarousel from "./AuctionImageCarousel";
+import StyledBox from "./StyledBox";
 
-export default function AuctionDetailCard({ item, children }) {
+export default function AuctionDetailCard({ item, childComponent }) {
   return (
-    <Box display="flex" justifyContent="center">
+    <StyledBox>
       <Box
         p={2}
         component={Paper}
@@ -17,8 +18,8 @@ export default function AuctionDetailCard({ item, children }) {
           <Grid item xs={2} md={7}>
             <Stack spacing={2}>
               <AuctionImagesCarousel cid={item._cid} compact={false} />
-              <Typography>Address: {item._contractAddress}</Typography>
-              <Typography>Seller: {item._seller}</Typography>
+              <Typography noWrap>Address: {item._contractAddress}</Typography>
+              <Typography noWrap>Seller: {item._seller}</Typography>
               <Stack direction="row" spacing={2}>
                 <Typography>
                   Start Time:{" "}
@@ -36,10 +37,10 @@ export default function AuctionDetailCard({ item, children }) {
             </Stack>
           </Grid>
           <Grid item xs={2} md={5}>
-            <Stack spacing={2}>{children}</Stack>
+            <Stack spacing={2}>{childComponent}</Stack>
           </Grid>
         </Grid>
       </Box>
-    </Box>
+    </StyledBox>
   );
 }

@@ -2,13 +2,15 @@ import { Typography, Stack, Paper, Box } from "@mui/material";
 import { ethers } from "ethers";
 import dayjs from "dayjs";
 import AuctionImagesCarousel from "./AuctionImageCarousel";
+import StyledBox from "./StyledBox";
 
-export default function AuctionMediaCard({ item, children }) {
+export default function AuctionMediaCard({ item, childComponent }) {
   return (
-    <Box display="flex" justifyContent="center">
+    <StyledBox>
       <Box p={2} component={Paper} elevation={4} boxShadow={6} width={400}>
         <Stack spacing={2}>
           <AuctionImagesCarousel cid={item._cid} compact={true} />
+          <Typography noWrap>Address: {item._contractAddress}</Typography>
           <Typography>
             Start Time: {dayjs.unix(item._startTime).format("DD/MM/YYYY HH:mm")}
           </Typography>
@@ -19,9 +21,9 @@ export default function AuctionMediaCard({ item, children }) {
             Mimimum Bid: {ethers.utils.formatUnits(item._minimumBid, "ether")}{" "}
             ETH
           </Typography>
-          {children}
+          {childComponent}
         </Stack>
       </Box>
-    </Box>
+    </StyledBox>
   );
 }

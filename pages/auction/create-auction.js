@@ -1,54 +1,70 @@
+import { useState, useMemo } from "react";
 import {
-  Stack,
-  Typography,
   Box,
-  Divider,
-  TextField,
   Button,
+  Divider,
   Paper,
+  Stack,
+  TextField,
+  Typography,
 } from "@mui/material";
+import dayjs from "dayjs";
+import { ethers } from "ethers";
+import { useWeb3Contract } from "react-moralis";
+import { Web3Storage } from "web3.storage";
+import CustomBackdrop from "../../components/CustomBackdrop";
+import ImageUpload from "../../components/ImageUpload";
+import AuctionDateTimePicker from "../../components/AuctionDateTimePicker";
 import {
   blindAuctionFactoryAbi,
   blindAuctionFactoryContractAddress,
 } from "../../constants";
-import { useState } from "react";
-import dayjs from "dayjs";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import { useWeb3Contract } from "react-moralis";
-import { ethers } from "ethers";
-import { Web3Storage } from "web3.storage";
-import ImageUpload from "../../components/ImageUpload";
-import CustomBackdrop from "../../components/CustomBackdrop";
-
-const currentTime = new Date();
+import StyledBox from "../../components/StyledBox";
 
 export default function CreateAuction() {
-  const [startTime, setStartTime] = useState(dayjs(currentTime));
-  const [endTime, setEndTime] = useState(dayjs(currentTime));
+  const [startTime, setStartTime] = useState(dayjs());
+  const [endTime, setEndTime] = useState(dayjs());
   const [minimumBid, setMinimumBid] = useState("0.1");
   const [images, setImages] = useState([]);
   const [compressedImages, setCompressedImages] = useState([]);
   const [showBackdrop, setShowBackdrop] = useState(false);
 
-  const isSubmitButtonDisabled = compressedImages.length === 0;
+  const isSubmitButtonDisabled = useMemo(
+    () => compressedImages.length === 0,
+    [compressedImages]
+  );
 
-  const web3storageClient = new Web3Storage({
-    token: process.env.NEXT_PUBLIC_WEB3STORAGE_TOKEN,
-  });
+  const web3storageClient = useMemo(
+    () => new Web3Storage({ token: process.env.NEXT_PUBLIC_WEB3STORAGE_TOKEN }),
+    []
+  );
 
-  const options = {
-    abi: blindAuctionFactoryAbi,
-    contractAddress: blindAuctionFactoryContractAddress,
-    functionName: "createBlindAuctionContract",
-    params: {},
-  };
+  const options = useMemo(
+    () => ({
+      abi: blindAuctionFactoryAbi,
+      contractAddress: blindAuctionFactoryContractAddress,
+      functionName: "createBlindAuctionContract",
+      params: {},
+    }),
+    []
+  );
 
   const { runContractFunction } = useWeb3Contract();
 
+  const toggleBackdrop = () => setShowBackdrop((prev) => !prev);
+
+  const handleCreateAuctionSuccess = async (tx) => {
+    try {
+      const txResponse = await tx.wait();
+      console.log(txResponse);
+      updateUIValues();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const handleCreateAuction = async () => {
-    setShowBackdrop(true);
+    toggleBackdrop();
     const cid = await web3storageClient.put(compressedImages);
     options.params = {
       startTime: Math.floor(startTime.valueOf() / 1000),
@@ -62,24 +78,21 @@ export default function CreateAuction() {
       onSuccess: handleCreateAuctionSuccess,
       onError: (error) => console.log(error),
     });
-
-    setShowBackdrop(false);
+    toggleBackdrop();
   };
 
-  const handleCreateAuctionSuccess = async (tx) => {
-    try {
-      const txResponse = await tx.wait();
-      console.log(txResponse);
-      updateUIValues();
-    } catch (err) {
-      console.log(err);
-    }
+  const updateUIValues = () => {
+    setStartTime(dayjs());
+    setEndTime(dayjs());
+    setMinimumBid("0.1");
+    setImages([]);
+    setCompressedImages([]);
   };
 
   return (
     <>
       {showBackdrop && <CustomBackdrop display={showBackdrop} />}
-      <Box display="flex" justifyContent="center">
+      <StyledBox>
         <Box
           p={2}
           component={Paper}
@@ -91,33 +104,12 @@ export default function CreateAuction() {
             <Typography variant="h3">Create New Auction</Typography>
             <Divider />
             <Stack spacing={2}>
-              <Stack
-                direction="row"
-                justifyContent="flex-start"
-                alignItems="center"
-                spacing={2}
-              >
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DateTimePicker
-                    renderInput={(props) => <TextField {...props} />}
-                    label="Start Time"
-                    value={startTime}
-                    onChange={(newValue) => {
-                      setStartTime(newValue);
-                    }}
-                  />
-                </LocalizationProvider>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DateTimePicker
-                    renderInput={(props) => <TextField {...props} />}
-                    label="End Time"
-                    value={endTime}
-                    onChange={(newValue) => {
-                      setEndTime(newValue);
-                    }}
-                  />
-                </LocalizationProvider>
-              </Stack>
+              <AuctionDateTimePicker
+                startTime={startTime}
+                setStartTime={setStartTime}
+                endTime={endTime}
+                setEndTime={setEndTime}
+              />
               <Box>
                 <TextField
                   label="Minimum Bid in ETH"
@@ -146,7 +138,7 @@ export default function CreateAuction() {
             </Stack>
           </Stack>
         </Box>
-      </Box>
+      </StyledBox>
     </>
   );
 }

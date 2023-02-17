@@ -1,4 +1,4 @@
-import { Box, Button, Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import { useEffect, useState } from "react";
 import {
   blindAuctionFactoryAbi,
@@ -8,7 +8,8 @@ import {
 } from "../constants";
 import { useWeb3Contract, useMoralis } from "react-moralis";
 import AuctionMediaCard from "../components/AuctionMediaCard";
-import Link from "../src/Link";
+import StyledGrid from "../components/StyledGrid";
+import AuctionMediaCardButton from "../components/AuctionMediaCardButton";
 
 export default function Home() {
   const [openAuctions, setOpenAuctions] = useState([]);
@@ -60,31 +61,25 @@ export default function Home() {
   };
 
   const CardChildComponent = ({ contractAddress }) => (
-    <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-      <Button
-        variant="contained"
-        color="secondary"
-        component={Link}
-        href={`/auction/${encodeURIComponent(contractAddress)}`}
-      >
-        Learn More
-      </Button>
-    </Box>
+    <AuctionMediaCardButton
+      href={`/auction/${encodeURIComponent(contractAddress)}`}
+      text="Learn More"
+    />
   );
 
   return (
-    <Grid container spacing={2} columns={{ xs: 2, md: 6, xl: 12 }}>
+    <StyledGrid>
       {openAuctions &&
         openAuctions.map((item, index) => (
           <Grid item key={index} xs={2} md={3} xl={4}>
             <AuctionMediaCard
               item={item}
-              children={
+              childComponent={
                 <CardChildComponent contractAddress={item._contractAddress} />
               }
             />
           </Grid>
         ))}
-    </Grid>
+    </StyledGrid>
   );
 }

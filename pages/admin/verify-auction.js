@@ -1,4 +1,4 @@
-import { Stack, Button, TextField, Box } from "@mui/material";
+import { Grid } from "@mui/material";
 import { useEffect, useState } from "react";
 import {
   blindAuctionFactoryAbi,
@@ -7,7 +7,9 @@ import {
   AUCTIONSTATE,
 } from "../../constants";
 import { useWeb3Contract, useMoralis } from "react-moralis";
-import AuctionDetailCard from "../../components/AuctionDetailCard";
+import AuctionMediaCard from "../../components/AuctionMediaCard";
+import StyledGrid from "../../components/StyledGrid";
+import AuctionMediaCardButton from "../../components/AuctionMediaCardButton";
 
 export default function VerifyAuction() {
   const [unVerifiedAuctions, setUnVerifiedAuctions] = useState([]);
@@ -58,102 +60,26 @@ export default function VerifyAuction() {
     }
   };
 
-  const handleVerification = async (contractAddress) => {
-    options = {
-      abi: blindAuctionAbi,
-      contractAddress: contractAddress,
-      functionName: "verifyAuction",
-      params: {},
-    };
-
-    await runContractFunction({
-      params: options,
-      onSuccess: handleSuccess,
-      onError: (error) => console.log(error),
-    });
-  };
-
-  const handleRejection = async (event, contractAddress) => {
-    event.preventDefault();
-
-    const rejectMessage = new FormData(event.currentTarget).get(
-      `rejectMessage-${contractAddress}`
-    );
-    options = {
-      abi: blindAuctionAbi,
-      contractAddress: contractAddress,
-      functionName: "rejectAuction",
-      params: { _rejectMessage: rejectMessage },
-    };
-
-    await runContractFunction({
-      params: options,
-      onSuccess: handleSuccess,
-      onError: (error) => console.log(error),
-    });
-  };
-
-  const handleSuccess = async (tx) => {
-    try {
-      const txResponse = await tx.wait();
-      console.log(txResponse);
-      updateUIValues();
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const RejectAuctionForm = ({ contractAddress }) => (
-    <Stack
-      spacing={2}
-      direction="row"
-      component="form"
-      name={`rejectForm-${contractAddress}`}
-      autoComplete="off"
-      onSubmit={(event) => handleRejection(event, contractAddress)}
-    >
-      <TextField
-        name={`rejectMessage-${contractAddress}`}
-        size="small"
-        label="Reject Message"
-        required
-      />
-      <Button variant="outlined" color="error" type="submit">
-        Reject
-      </Button>
-    </Stack>
-  );
-
   const CardChildComponent = ({ contractAddress }) => (
-    <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-      <Stack spacing={2} alignItems="flex-end">
-        <Box>
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={() => handleVerification(contractAddress)}
-          >
-            Verify
-          </Button>
-        </Box>
-        <RejectAuctionForm contractAddress={contractAddress} />
-      </Stack>
-    </Box>
+    <AuctionMediaCardButton
+      href={`/admin/evaluate/${encodeURIComponent(contractAddress)}`}
+      text="Evaluate"
+    />
   );
 
   return (
-    <Stack spacing={2}>
+    <StyledGrid>
       {unVerifiedAuctions &&
         unVerifiedAuctions.map((item, index) => (
-          <Box key={index}>
-            <AuctionDetailCard
+          <Grid item key={index} xs={2} md={3} xl={4}>
+            <AuctionMediaCard
               item={item}
-              children={
+              childComponent={
                 <CardChildComponent contractAddress={item._contractAddress} />
               }
             />
-          </Box>
+          </Grid>
         ))}
-    </Stack>
+    </StyledGrid>
   );
 }
