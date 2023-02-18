@@ -29,7 +29,7 @@ const UserMenuList = [
     icon: <AddBoxIcon />,
     href: "/auction/create-auction",
   },
-  { text: "My Watchlist", icon: <WatchLaterIcon />, href: "/my-watchlist" },
+  { text: "My Wishlist", icon: <WatchLaterIcon />, href: "/my-watchlist" },
 ];
 
 const AdminMenuList = [

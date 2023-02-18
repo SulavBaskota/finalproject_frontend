@@ -43,7 +43,7 @@ export default function AuctionImagesCarousel({ cid, compact }) {
                 display="flex"
                 justifyContent="center"
                 position="relative"
-                height={400}
+                height={compact ? 200 : 400}
               >
                 <Image src={imageUrl} alt={images[index].name} fill />
               </Box>

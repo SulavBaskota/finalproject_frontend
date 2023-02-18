@@ -1,13 +1,23 @@
-import { AppBar, Box, Toolbar, Button, Typography } from "@mui/material";
-import Navbar from "./Navbar";
-import { useEffect, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useMoralis, useWeb3Contract } from "react-moralis";
+import {
+  Box,
+  Button,
+  Alert,
+  AppBar,
+  Toolbar,
+  Typography,
+  Collapse,
+  IconButton,
+} from "@mui/material";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
-import { adminAbi, adminContractAddress } from "../constants";
-import Image from "next/image";
-import logoPicWhite from "../public/logo-white.png";
-import { RoleContext } from "../src/Contexts";
+import CloseIcon from "@mui/icons-material/Close";
 import Link from "../src/Link";
+import Image from "next/image";
+import { RoleContext } from "../src/Contexts";
+import Navbar from "./Navbar";
+import { adminAbi, adminContractAddress } from "../constants";
+import logoPicWhite from "../public/logo-white.png";
 
 export default function Header() {
   const {
@@ -17,7 +27,12 @@ export default function Header() {
     account,
     Moralis,
     deactivateWeb3,
+    chainId: chainIdHex,
   } = useMoralis();
+
+  const chainId = parseInt(chainIdHex);
+
+  const [open, setOpen] = useState(false);
 
   const { role, updateRole } = useContext(RoleContext);
 
@@ -40,7 +55,7 @@ export default function Header() {
       enableWeb3();
     }
     updateUIValues();
-  }, [isWeb3Enabled, account]);
+  }, [isWeb3Enabled, account, chainId]);
 
   useEffect(() => {
     const unsubscribe = Moralis.onAccountChanged((newAccount) => {
@@ -50,7 +65,7 @@ export default function Header() {
       }
     });
 
-    unsubscribe();
+    return () => unsubscribe();
   }, []);
 
   const updateUIValues = async () => {
@@ -58,6 +73,11 @@ export default function Header() {
       updateRole(null);
       return;
     }
+    if (chainId !== 1337 && chainId !== 31337) {
+      setOpen(true);
+      return;
+    }
+    setOpen(false);
     const isAdminFromCall = await isAdmin();
     if (isAdminFromCall) {
       const isSuperAdminFromCall = await isSuperAdmin();
@@ -118,6 +138,25 @@ export default function Header() {
           )}
         </Toolbar>
       </AppBar>
+      <Collapse in={open}>
+        <Alert
+          severity="info"
+          action={
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              size="small"
+              onClick={() => {
+                setOpen(false);
+              }}
+            >
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+          }
+        >
+          Please connect to Ganache chain
+        </Alert>
+      </Collapse>
     </Box>
   );
 }
