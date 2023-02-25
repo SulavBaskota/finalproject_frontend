@@ -4,6 +4,7 @@ import {
   TextField,
   Typography,
   Box,
+  Paper,
   Stack,
 } from "@mui/material";
 import { useEffect, useContext, useState } from "react";
@@ -13,6 +14,7 @@ import { adminAbi, adminContractAddress } from "../../constants";
 import CustomBackdrop from "../../components/CustomBackdrop";
 import { useRouter } from "next/router";
 import { ethers } from "ethers";
+import StyledBox from "../../components/StyledBox";
 
 export default function ManageAdmins() {
   const { role } = useContext(RoleContext);
@@ -57,6 +59,7 @@ export default function ManageAdmins() {
   };
 
   const handleRegisterAdmin = async () => {
+    console.log(newAdminAddress);
     if (ethers.utils.isAddress(newAdminAddress)) {
       options.functionName = "registerAdmin";
       options.params = { adminAddress: newAdminAddress };
@@ -141,6 +144,7 @@ export default function ManageAdmins() {
                 variant="body2"
                 fontWeight="bold"
                 textTransform="uppercase"
+                noWrap
               >
                 {item}
               </Typography>
@@ -165,11 +169,21 @@ export default function ManageAdmins() {
         <CustomBackdrop display={isLoading || isFetching} />
       )}
       {role && (
-        <Stack spacing={2}>
-          <ResigterAdmin />
-          <Divider />
-          {adminAddressArray.length > 0 && <DeleteAdmin />}
-        </Stack>
+        <StyledBox>
+          <Box
+            p={2}
+            component={Paper}
+            elevation={4}
+            boxShadow={6}
+            width={{ xs: 400, sm: 600, md: 900 }}
+          >
+            <Stack spacing={2}>
+              <ResigterAdmin />
+              <Divider />
+              {adminAddressArray.length > 0 && <DeleteAdmin />}
+            </Stack>
+          </Box>
+        </StyledBox>
       )}
     </>
   );

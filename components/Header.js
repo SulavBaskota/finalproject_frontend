@@ -154,7 +154,8 @@ export default function Header() {
             </IconButton>
           }
         >
-          Please connect to Ganache chain
+          Please switch to a supported chainId. The supported Chain Ids are:
+          1337 and 31337
         </Alert>
       </Collapse>
     </Box>

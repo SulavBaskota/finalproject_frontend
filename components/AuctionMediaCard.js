@@ -7,7 +7,14 @@ import StyledBox from "./StyledBox";
 export default function AuctionMediaCard({ item, childComponent }) {
   return (
     <StyledBox>
-      <Box p={2} component={Paper} elevation={4} boxShadow={6} width={300}>
+      <Box
+        p={2}
+        component={Paper}
+        elevation={4}
+        boxShadow={6}
+        width={350}
+        height={500}
+      >
         <Stack spacing={2}>
           <AuctionImagesCarousel cid={item._cid} compact={true} />
           <Typography noWrap>Address: {item._contractAddress}</Typography>

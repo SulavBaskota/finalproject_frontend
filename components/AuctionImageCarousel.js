@@ -23,9 +23,13 @@ export default function AuctionImagesCarousel({ cid, compact }) {
   }, [images]);
 
   const retrieveFiles = async () => {
-    const res = await web3StorageClient.get(cid);
-    const files = await res.files();
-    setImages(files);
+    try {
+      const res = await web3StorageClient.get(cid);
+      const files = await res.files();
+      setImages(files);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (
@@ -43,7 +47,7 @@ export default function AuctionImagesCarousel({ cid, compact }) {
                 display="flex"
                 justifyContent="center"
                 position="relative"
-                height={compact ? 200 : 400}
+                height={compact ? 250 : 400}
               >
                 <Image src={imageUrl} alt={images[index].name} fill />
               </Box>
